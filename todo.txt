@@ -1,0 +1,4 @@
+Add text editor screen:
+    Implement read logic(50% done)
+    Implement save logic
+    Do the UI frfr good
