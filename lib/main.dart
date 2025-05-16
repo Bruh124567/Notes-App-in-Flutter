@@ -213,14 +213,10 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('New Note'),
-          content: Column(
-            children: [
-              TextField(
+          content: TextField(
                 controller: _textController,
                 decoration: InputDecoration(hintText: "What's on your mind?"),
               ),
-            ],
-          ),
           actions: <Widget>[
             TextButton(
               child: Text('Cancel'),
@@ -286,11 +282,12 @@ class _NoteEditState extends State<NoteEdit> {
       appBar: AppBar(title: Text('Edit Note')),
       body: Column(
         children: [
-          Expanded(
+          Padding(
+            padding: const EdgeInsets.all(12.0),
             child: TextField(
-              controller: _textController,
-              decoration: InputDecoration(),
-            ),
+                controller: _textController,
+                decoration: InputDecoration(),
+              ),
           ),
         ],
       ),
