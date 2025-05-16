@@ -184,11 +184,19 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.title),
         ),
-        body: Center(
-          child: Text(
-            'No notes yet :(',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: Text(
+                'No notes yet :(',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ),
+            Image.asset(
+              'images/sadblueemoji.png'
+            )
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -208,6 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var noteTitle = '';
     var noteBody = '';
     TextEditingController _textController = TextEditingController();
+    ScrollController _scrollController = ScrollController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -216,6 +225,10 @@ class _MyHomePageState extends State<MyHomePage> {
           content: TextField(
                 controller: _textController,
                 decoration: InputDecoration(hintText: "What's on your mind?"),
+                scrollController: _scrollController,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                expands: true,
               ),
           actions: <Widget>[
             TextButton(
@@ -253,6 +266,7 @@ class NoteEdit extends StatefulWidget {
 }
 
 class _NoteEditState extends State<NoteEdit> {
+  ScrollController _scrollController = ScrollController();
   TextEditingController _textController = TextEditingController();
 
   void prepNote(String note) {
@@ -282,12 +296,18 @@ class _NoteEditState extends State<NoteEdit> {
       appBar: AppBar(title: Text('Edit Note')),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-                controller: _textController,
-                decoration: InputDecoration(),
-              ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: TextField(
+                  controller: _textController,
+                  decoration: InputDecoration(),
+                  scrollController: _scrollController,
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  expands: true,
+                ),
+            ),
           ),
         ],
       ),
