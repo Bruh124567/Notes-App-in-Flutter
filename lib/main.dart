@@ -179,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
               if (appState.isTask(appState.getNote(index))) {
                 return ListTile(
                     leading: Row(
-                      children: [
+                      children: [  //TODO: Add checkbox to be able to mark as complete
                         IconButton(
                           icon: const Icon(Icons.edit),
                           onPressed: () {
