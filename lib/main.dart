@@ -106,12 +106,12 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addNote(String note, [String title = '']) {
-    if (title.isEmpty) {
+  void addNote(String note, [bool isTask = false, String title = '']) {
+    if (!isTask) {
       notes.add('Note #${notes.length + 1}: ${note.toString()}');
       _saveNotes();
-    } else {
-      notes.add('${title}: ${note.toString()}');
+    } else if (isTask) {
+      notes.add('Task #${notes.length + 1}: ${note.toString()}');
       _saveNotes();
     }
     notifyListeners();
@@ -176,26 +176,52 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.all(8),
             itemCount: appState.getNoteCount(),
             itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                  leading: IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      setState(() {
-                        noteIndex = index;
-                        appState.selectedIndex = 1;
-                      });
-                    },
-                  ),
-                  title: Text(appState.getNote(index)),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      setState(() {
-                        appState.remNote(index);
-                      });
-                    },
-                  ),
-              );
+              if (appState.isTask(appState.getNote(index))) {
+                return ListTile(
+                    leading: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            setState(() {
+                              noteIndex = index;
+                              appState.selectedIndex = 1;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    title: Text(appState.getNote(index)),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {
+                        setState(() {
+                          appState.remNote(index);
+                        });
+                      },
+                    ),
+                );} else {
+                  return ListTile(
+                    leading: IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        setState(() {
+                          noteIndex = index;
+                          appState.selectedIndex = 1;
+                        });
+                      },
+                    ),
+                    title: Text(appState.getNote(index)),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {
+                        setState(() {
+                          appState.remNote(index);
+                        });
+                      },
+                    ),
+                );
+                }
             },
             shrinkWrap: false,
             scrollDirection: Axis.vertical,
@@ -245,6 +271,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 //TODO: Clean up the textbox
   void noteCreatePopup(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     MyAppState appState = Provider.of<MyAppState>(context, listen: false);
     bool isTask = false;
     var noteTitle = '';
@@ -255,25 +283,43 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('New Note'),
-          content: Column(
-            children: [
-              TextField(
-                    controller: _textController,
-                    decoration: InputDecoration(hintText: "What's on your mind?"),
-                    scrollController: _scrollController,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    expands: true,
-                  ),
-              Checkbox(value: isTask, onChanged: (bool? value) {
-                setState(() {
-                  isTask = value!;
-                });
-              }),
-            ],
-          ),
-          actions: <Widget>[
+          title: Text('New Note/Task'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter dialogSetState) {
+              // dialogSetState is specific to this StatefulBuilder's content
+              return SizedBox(
+                width: screenWidth * 0.7,
+                height: screenHeight * 0.4,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _textController,
+                        decoration: InputDecoration(hintText: "What's on your mind?"),
+                        scrollController: _scrollController,
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        expands: true,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: isTask,
+                          onChanged: (bool? value) {
+                            dialogSetState(() {
+                              isTask = value!;
+                            });
+                          },
+                        ),
+                        Text('Is this a task?'),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),          actions: <Widget>[
             TextButton(
               child: Text('Cancel'),
               onPressed: () {
@@ -294,8 +340,8 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     ).then((value) {
       if (value != null) {
-        appState.addNote(value, '');
-      }
+          appState.addNote(value, isTask, noteTitle);
+        }
     });
   }
 }
