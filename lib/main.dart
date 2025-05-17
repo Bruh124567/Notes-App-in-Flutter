@@ -52,9 +52,42 @@ class MyAppState extends ChangeNotifier {
     }
   }
 
+  bool isTask(String note) {
+    if (note.length >= 4 && note.startsWith('Task')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool isTaskDone(String note) {
+    if (isTask(note) && note.startsWith('!')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void updateTaskState(int index) {
+    if (isTask(notes[index])) {
+      if (isTaskDone(notes[index])) {
+        notes[index] = notes[index].substring(1);
+        _saveNotes();
+        notifyListeners();
+      } else {
+        notes[index] = '!${notes[index]}';
+      }
+      _saveNotes();
+      notifyListeners();
+    } else {
+      print('Not a task!');
+    }
+  }
+
   String getNote(int index) {
     return notes[index];
   }
+
 
   void returnHome() {
     selectedIndex = 0;
@@ -213,6 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //TODO: Clean up the textbox
   void noteCreatePopup(BuildContext context) {
     MyAppState appState = Provider.of<MyAppState>(context, listen: false);
+    bool isTask = false;
     var noteTitle = '';
     var noteBody = '';
     TextEditingController _textController = TextEditingController();
@@ -222,14 +256,23 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('New Note'),
-          content: TextField(
-                controller: _textController,
-                decoration: InputDecoration(hintText: "What's on your mind?"),
-                scrollController: _scrollController,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                expands: true,
-              ),
+          content: Column(
+            children: [
+              TextField(
+                    controller: _textController,
+                    decoration: InputDecoration(hintText: "What's on your mind?"),
+                    scrollController: _scrollController,
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
+                    expands: true,
+                  ),
+              Checkbox(value: isTask, onChanged: (bool? value) {
+                setState(() {
+                  isTask = value!;
+                });
+              }),
+            ],
+          ),
           actions: <Widget>[
             TextButton(
               child: Text('Cancel'),
