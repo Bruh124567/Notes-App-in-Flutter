@@ -126,6 +126,7 @@ class MyAppState extends ChangeNotifier {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+
   final String title;
 
   @override
@@ -160,7 +161,10 @@ class _MyHomePageState extends State<MyHomePage> {
     if (appState.selectedIndex != 0) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .inversePrimary,
           title: Text(widget.title),
         ),
         body: Container(child: page),
@@ -168,7 +172,10 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (appState.getNoteCount() != 0) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .inversePrimary,
           title: Text(widget.title),
         ),
         body: Center(
@@ -178,50 +185,47 @@ class _MyHomePageState extends State<MyHomePage> {
             itemBuilder: (BuildContext context, int index) {
               if (appState.isTask(appState.getNote(index))) {
                 return ListTile(
-                    leading: Row(
-                      children: [  //TODO: Add checkbox to be able to mark as complete
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            setState(() {
-                              noteIndex = index;
-                              appState.selectedIndex = 1;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    title: Text(appState.getNote(index)),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          appState.remNote(index);
-                        });
-                      },
-                    ),
-                );} else {
-                  return ListTile(
-                    leading: IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        setState(() {
-                          noteIndex = index;
-                          appState.selectedIndex = 1;
-                        });
-                      },
-                    ),
-                    title: Text(appState.getNote(index)),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          appState.remNote(index);
-                        });
-                      },
-                    ),
+                  leading: IconButton( //TODO: Add checkbox to be able to mark as complete
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      setState(() {
+                        noteIndex = index;
+                        appState.selectedIndex = 1;
+                      });
+                    },
+                  ),
+                  title: Text(appState.getNote(index)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      setState(() {
+                        appState.remNote(index);
+                      });
+                    },
+                  ),
                 );
-                }
+              } else {
+                return ListTile(
+                  leading: IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      setState(() {
+                        noteIndex = index;
+                        appState.selectedIndex = 1;
+                      });
+                    },
+                  ),
+                  title: Text(appState.getNote(index)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      setState(() {
+                        appState.remNote(index);
+                      });
+                    },
+                  ),
+                );
+              }
             },
             shrinkWrap: false,
             scrollDirection: Axis.vertical,
@@ -240,7 +244,10 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .inversePrimary,
           title: Text(widget.title),
         ),
         body: Column(
@@ -249,11 +256,14 @@ class _MyHomePageState extends State<MyHomePage> {
             Center(
               child: Text(
                 'No notes yet :(',
-                style: Theme.of(context).textTheme.headlineMedium,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headlineMedium,
               ),
             ),
             Image.asset(
-              'images/sadblueemoji.png'
+                'images/sadblueemoji.png'
             )
           ],
         ),
@@ -269,10 +279,17 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
   }
+
 //TODO: Clean up the textbox
   void noteCreatePopup(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
     MyAppState appState = Provider.of<MyAppState>(context, listen: false);
     bool isTask = false;
     var noteTitle = '';
@@ -295,7 +312,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     Expanded(
                       child: TextField(
                         controller: _textController,
-                        decoration: InputDecoration(hintText: "What's on your mind?"),
+                        decoration: InputDecoration(
+                            hintText: "What's on your mind?"),
                         scrollController: _scrollController,
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
@@ -319,35 +337,36 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             },
-          ),          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                setState(() {
-                  noteBody = _textController.text;
-                });
-                Navigator.of(context).pop(noteBody);
-              },
-            ),
-          ],
+          ), actions: <Widget>[
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              setState(() {
+                noteBody = _textController.text;
+              });
+              Navigator.of(context).pop(noteBody);
+            },
+          ),
+        ],
         );
       },
     ).then((value) {
       if (value != null) {
-          appState.addNote(value, isTask, noteTitle);
-        }
+        appState.addNote(value, isTask, noteTitle);
+      }
     });
   }
 }
 
 class NoteEdit extends StatefulWidget {
   NoteEdit({super.key, required this.index});
+
   final int index;
 
   @override
@@ -375,6 +394,7 @@ class _NoteEditState extends State<NoteEdit> {
       });
     }
   }
+
 //TODO: Clean up UI
   @override
   Widget build(BuildContext context) {
@@ -389,13 +409,13 @@ class _NoteEditState extends State<NoteEdit> {
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: TextField(
-                  controller: _textController,
-                  decoration: InputDecoration(),
-                  scrollController: _scrollController,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  expands: true,
-                ),
+                controller: _textController,
+                decoration: InputDecoration(),
+                scrollController: _scrollController,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                expands: true,
+              ),
             ),
           ),
         ],
